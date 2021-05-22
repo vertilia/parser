@@ -11,7 +11,7 @@ namespace Vertilia\Parser;
  */
 class OpenApiParser implements ParserInterface
 {
-    protected $vars = [];
+    protected array $vars = [];
 
     public function getVars(): array
     {
@@ -22,22 +22,20 @@ class OpenApiParser implements ParserInterface
      * Returns a regexp that allows to match the incoming route and parse provided params.
      * Ex: "/users/{id}" will be represented by regexp "#^/users/(?P<id>.+)$#"
      *
-     * @param string $path
+     * @param string $text
      * @return string
      */
-    public function getRegex(string $path): string
+    public function getRegex(string $text): string
     {
         $this->vars = [];
         $cnt = 0;
 
-        return '#^'.\preg_replace_callback(
+        return '#^'.preg_replace_callback(
             '/\\\{(\\\?\W)?([[:alpha:]_]\w*(?:,[[:alpha:]_]\w*)*)(\\\\\*)?\\\}/',
             function ($v) use (&$cnt) {
                 $this->vars[++$cnt] = $v[2];
                 $var = strtr($v[2], ',', '_');
                 switch ($v[1]) {
-                    case '':
-                        return "(?P<$var>.+)";
                     case '\.':
                         return "(?P<$var>\\..+)";
                     case ';':
@@ -46,7 +44,7 @@ class OpenApiParser implements ParserInterface
                         return "(?P<$var>.+)";
                 }
             },
-            \preg_quote($path, '#')
+            preg_quote($text, '#')
         ).'$#';
     }
 }

@@ -16,16 +16,16 @@ class OpenApiParserTest extends TestCase
      * @covers ::getRegex
      * @dataProvider getRegexProvider
      */
-    public function testGetRegex($pattern, $path, $vars)
+    public function testGetRegex(string $pattern, string $path, array $vars)
     {
         $parser = new OpenApiParser();
         $pattern = $parser->getRegex($pattern);
-        $result = preg_match($pattern, $path, $matches);
+        preg_match($pattern, $path, $matches);
         $this->assertEquals($vars, array_intersect_key($matches, $vars));
     }
 
     /** data provider */
-    public function getRegexProvider()
+    public function getRegexProvider(): array
     {
         return [
             ['/users/', '/users/', []],
